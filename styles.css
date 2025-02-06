@@ -1,0 +1,9 @@
+body { font-family: Arial, sans-serif; text-align: center; }
+table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+th, td { border: 1px solid black; padding: 10px; text-align: center; }
+button { margin: 5px; }
+
+.work-day { background-color: red; color: white; }
+.rest-day { background-color: white; color: black; }
+.night-extra { background-color: darkblue; color: white; }
+.day-extra { background-color: yellow; color: black; }
