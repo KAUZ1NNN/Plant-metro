@@ -1,139 +1,85 @@
-function generateSchedule() {
-    const startDate = document.getElementById("startDate").value;
-    if (!startDate) return alert("Por favor, insira uma data de início.");
+let currentDate = new Date();
+let startDate = null;
+let schedule = {};
+
+function generateCalendar() {
+    startDate = new Date(document.getElementById("startDate").value);
+    if (isNaN(startDate)) {
+        alert("Por favor, selecione uma data válida.");
+        return;
+    }
+    schedule = generateSchedule(startDate);
+    saveSchedule();
+    renderCalendar();
+}
+
+function renderCalendar() {
+    let calendar = document.getElementById("calendar");
+    calendar.innerHTML = "";
+    let month = currentDate.getMonth();
+    let year = currentDate.getFullYear();
+    document.getElementById("currentMonth").innerText = `${year}-${(month + 1).toString().padStart(2, '0')}`;
     
-    let schedule = [];
-    let currentDate = new Date(startDate);
-    let tableBody = document.querySelector("#schedule tbody");
-    tableBody.innerHTML = "";
+    let firstDay = new Date(year, month, 1).getDay();
+    let daysInMonth = new Date(year, month + 1, 0).getDate();
+    let todayStr = new Date().toISOString().split('T')[0];
     
-    for (let i = 0; i < 30; i += 4) { // Gera escala para 1 mês
-        let workDay = new Date(currentDate);
-        schedule.push({ date: workDay.toISOString().split('T')[0], type: "Trabalho" });
-        
-        for (let j = 1; j <= 3; j++) {
-            let restDay = new Date(workDay);
-            restDay.setDate(restDay.getDate() + j);
-            schedule.push({ date: restDay.toISOString().split('T')[0], type: "Folga" });
+    for (let i = 0; i < firstDay; i++) {
+        let emptyDiv = document.createElement("div");
+        calendar.appendChild(emptyDiv);
+    }
+    
+    for (let day = 1; day <= daysInMonth; day++) {
+        let dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+        let type = schedule[dateStr] || "rest-day";
+        let dayDiv = document.createElement("div");
+        dayDiv.classList.add("day", type);
+        if (dateStr === todayStr) {
+            dayDiv.classList.add("today");
         }
-        
-        currentDate.setDate(currentDate.getDate() + 4);
-    }
-
-    // Salva a escala gerada no localStorage
-    localStorage.setItem("schedule", JSON.stringify(schedule));
-
-    schedule.forEach(entry => addRow(entry.date, entry.type));
-}
-
-function addRow(date, type) {
-    let tableBody = document.querySelector("#schedule tbody");
-    let row = tableBody.insertRow();
-    row.insertCell(0).innerText = date;
-    let typeCell = row.insertCell(1);
-    typeCell.innerText = type;
-
-    // Adiciona cor conforme o tipo
-    if (type === "Trabalho") {
-        row.classList.add('work-day');
-    } else if (type === "Folga") {
-        row.classList.add('rest-day');
-    } else if (type === "Extra Diurno") {
-        row.classList.add('day-extra');
-    } else if (type === "Extra Noturno") {
-        row.classList.add('night-extra');
-    }
-
-    let actionCell = row.insertCell(2);
-    
-    if (type === "Folga") {
-        let btnDay = document.createElement("button");
-        btnDay.innerText = "Extra Diurno";
-        btnDay.onclick = function() { updateRow(row, "Extra Diurno"); };
-        
-        let btnNight = document.createElement("button");
-        btnNight.innerText = "Extra Noturno";
-        btnNight.onclick = function() { updateRow(row, "Extra Noturno"); };
-        
-        actionCell.appendChild(btnDay);
-        actionCell.appendChild(btnNight);
-    } else {
-        let btnRemove = document.createElement("button");
-        btnRemove.innerText = "Remover Extra";
-        btnRemove.onclick = function() { updateRow(row, "Folga"); };
-        actionCell.appendChild(btnRemove);
+        dayDiv.innerText = day;
+        dayDiv.onclick = () => toggleExtra(dayDiv, dateStr);
+        calendar.appendChild(dayDiv);
     }
 }
 
-function updateRow(row, newType) {
-    row.cells[1].innerText = newType;
-    let actionCell = row.cells[2];
-    actionCell.innerHTML = "";
-
-    // Remove classes antigas
-    row.classList.remove('rest-day', 'work-day', 'night-extra', 'day-extra');
-
-    // Define nova classe de cor
-    if (newType === "Folga") {
-        row.classList.add('rest-day');
-        let btnDay = document.createElement("button");
-        btnDay.innerText = "Extra Diurno";
-        btnDay.onclick = function() { updateRow(row, "Extra Diurno"); };
-        
-        let btnNight = document.createElement("button");
-        btnNight.innerText = "Extra Noturno";
-        btnNight.onclick = function() { updateRow(row, "Extra Noturno"); };
-        
-        actionCell.appendChild(btnDay);
-        actionCell.appendChild(btnNight);
-    } else if (newType === "Extra Diurno") {
-        row.classList.add('day-extra');
-        let btnRemove = document.createElement("button");
-        btnRemove.innerText = "Remover Extra";
-        btnRemove.onclick = function() { updateRow(row, "Folga"); };
-        actionCell.appendChild(btnRemove);
-    } else if (newType === "Extra Noturno") {
-        row.classList.add('night-extra');
-        let btnRemove = document.createElement("button");
-        btnRemove.innerText = "Remover Extra";
-        btnRemove.onclick = function() { updateRow(row, "Folga"); };
-        actionCell.appendChild(btnRemove);
-    } else {
-        row.classList.add('work-day');
+function generateSchedule(startDate) {
+    let newSchedule = {};
+    let workDay = new Date(startDate);
+    while (workDay.getFullYear() < 2100) {  // Simula um ciclo infinito
+        let workDate = new Date(workDay);
+        newSchedule[workDate.toISOString().split('T')[0]] = "work-day";
+        for (let j = 1; j <= 3; j++) {
+            let restDay = new Date(workDate);
+            restDay.setDate(restDay.getDate() + j);
+            newSchedule[restDay.toISOString().split('T')[0]] = "rest-day";
+        }
+        workDay.setDate(workDay.getDate() + 4);
     }
-
-    // Atualiza o localStorage
-    updateLocalStorage();
+    return newSchedule;
 }
 
-function updateLocalStorage() {
-    const scheduleData = [];
-    const rows = document.querySelectorAll("#schedule tbody tr");
-
-    rows.forEach(row => {
-        let date = row.cells[0].innerText;
-        let type = row.cells[1].innerText;
-        scheduleData.push({ date, type });
-    });
-
-    // Salva a escala atualizada no localStorage
-    localStorage.setItem("schedule", JSON.stringify(scheduleData));
+function toggleExtra(element, date) {
+    schedule[date] = schedule[date] === "rest-day" ? "day-extra" : schedule[date] === "day-extra" ? "night-extra" : "rest-day";
+    saveSchedule();
+    renderCalendar();
 }
 
-// Função para carregar os dados do localStorage ao iniciar
+function changeMonth(delta) {
+    currentDate.setMonth(currentDate.getMonth() + delta);
+    renderCalendar();
+}
+
+function saveSchedule() {
+    localStorage.setItem("pantometroSchedule", JSON.stringify(schedule));
+}
+
 function loadSchedule() {
-    const savedSchedule = JSON.parse(localStorage.getItem("schedule"));
-
+    let savedSchedule = localStorage.getItem("pantometroSchedule");
     if (savedSchedule) {
-        savedSchedule.forEach(entry => addRow(entry.date, entry.type));
+        schedule = JSON.parse(savedSchedule);
+        renderCalendar();
     }
 }
 
-// Chama a função de carregamento quando a página for carregada
 document.addEventListener("DOMContentLoaded", loadSchedule);
-
-if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("sw.js")
-        .then(() => console.log("Service Worker registrado!"))
-        .catch(err => console.log("Erro no Service Worker:", err));
-}
