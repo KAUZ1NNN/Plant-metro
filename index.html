@@ -13,20 +13,19 @@
         <meta name="apple-mobile-web-app-title" content="Pantômetro">
 </head>
 <body>
-    <h2>Pantômetro - Escala 1x3</h2>
+    
+    <h2>Plantômetro - Escala 1x3</h2>
     <label for="startDate">Data de Início:</label>
     <input type="date" id="startDate">
-    <button onclick="generateSchedule()">Gerar Escala</button>
-    <table id="schedule">
-        <thead>
-            <tr>
-                <th>Data</th>
-                <th>Tipo</th>
-                <th>Ação</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+    <button onclick="generateCalendar()">Gerar Escala</button>
+    <div class="calendar-container">
+        <div class="calendar-header">
+            <button onclick="changeMonth(-1)">&lt;</button>
+            <h3 id="currentMonth"></h3>
+            <button onclick="changeMonth(1)">&gt;</button>
+        </div>
+        <div class="calendar" id="calendar"></div>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
