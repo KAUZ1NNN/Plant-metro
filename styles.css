@@ -8,4 +8,8 @@ body { font-family: Arial, sans-serif; text-align: center; background: #f4f4f4; 
 .rest-day { background-color: lightgray; color: black; }
 .night-extra { background-color: darkblue; color: white; }
 .day-extra { background-color: yellow; color: black; }
+<<<<<<< HEAD
 .today { border: 2px solid black; }
+=======
+.today { border: 2px solid black; }
+>>>>>>> c9d3f2a8abf123995b6b5693a1d3a2f6116a7b3d
