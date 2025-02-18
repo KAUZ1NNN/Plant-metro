@@ -1,9 +1,11 @@
-body { font-family: Arial, sans-serif; text-align: center; }
-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-th, td { border: 1px solid black; padding: 10px; text-align: center; }
-button { margin: 5px; }
-
+body { font-family: Arial, sans-serif; text-align: center; background: #f4f4f4; }
+.calendar-container { max-width: 400px; margin: auto; background: white; padding: 15px; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); }
+.calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.calendar-header button { background: none; border: none; font-size: 1.5em; cursor: pointer; }
+.calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+.day { padding: 15px; background: white; border-radius: 5px; cursor: pointer; transition: 0.3s; }
 .work-day { background-color: red; color: white; }
-.rest-day { background-color: white; color: black; }
+.rest-day { background-color: lightgray; color: black; }
 .night-extra { background-color: darkblue; color: white; }
 .day-extra { background-color: yellow; color: black; }
+.today { border: 2px solid black; }
