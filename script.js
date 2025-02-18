@@ -82,8 +82,4 @@ function loadSchedule() {
     }
 }
 
-<<<<<<< HEAD
 document.addEventListener("DOMContentLoaded", loadSchedule);
-=======
-document.addEventListener("DOMContentLoaded", loadSchedule);
->>>>>>> c9d3f2a8abf123995b6b5693a1d3a2f6116a7b3d
